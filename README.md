@@ -192,7 +192,7 @@ npm run seed
 ---
 
 
-# Architecture overview (one page)
+# Architecture overview 
 
 **Goals:** a small, testable, event-driven monitoring system with clear separation of concerns and a single source of truth for clinical logic.
 
