@@ -359,6 +359,7 @@ When ready:
 git tag v1.0
 git push origin main --tags
 ```
+- In the backened and frontened folders there are 2 more README.md files explaining the depth of frontentened and backened details and many more explanations, check out them too.
 
 
 
