@@ -1,4 +1,33 @@
-# Dialysis Dashboard
+## Project Description
+
+Dialysis Dashboard is a full-stack clinical monitoring system designed to manage and track daily dialysis sessions within a hospital unit.
+
+The system enables nurses to:
+
+- View all patients scheduled for the day
+- Start dialysis sessions
+- Record clinical measurements (pre/post weight, blood pressure, duration)
+- Automatically detect and highlight clinically significant anomalies
+- Filter patients based on anomaly presence
+
+The backend is built with **Node.js, Express, TypeScript, and MongoDB**, and follows a clean separation between domain models, service logic, and API routes.  
+Anomaly detection is implemented as a deterministic, testable service layer component.
+
+The frontend is built using **React + Vite + TypeScript**, providing a simple and responsive dashboard interface for clinical staff.
+
+Key architectural principle:  
+All clinical decision logic (anomaly detection) lives on the server to ensure a single source of truth and easy unit testing.
+
+The system also exposes **OpenAPI (Swagger) documentation** for API exploration and manual testing at `/docs`.
+
+This project demonstrates:
+- Clear domain modeling
+- Configurable clinical thresholds (no magic numbers)
+- Test coverage for core business logic and API routes
+- Clean separation of concerns
+- Production-ready structure for future scaling
+-
+- # Dialysis Dashboard
 
 A small, testable, event-driven monitoring system for dialysis units — built with **Express + TypeScript** (backend) and **React + Vite + TypeScript** (frontend).
 
