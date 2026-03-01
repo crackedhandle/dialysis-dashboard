@@ -1,91 +1,133 @@
-# 1. Clone
-git clone https://github.com/crackedhandle/dialysis-dashboard.git
-cd dialysis-dashboard
+# Dialysis Dashboard
 
-# 2. Backend: install, seed, run
-cd backend
-npm install
-# create .env (see below)
-npm run seed
-npm run dev
+A small, testable, event-driven monitoring system for dialysis units — built with **Express + TypeScript** (backend) and **React + Vite + TypeScript** (frontend).
 
-# 3. Frontend: install and run
-cd ..\frontend
-npm install
-npm run dev
+---
 
-# Open in browser:
-# Backend OpenAPI: http://localhost:5000/docs
-# Frontend:          http://localhost:5173
+##  Project Structure
 
+```
 dialysis-dashboard/
-├─ backend/                # Express + TypeScript API
+├─ backend/                  # Express + TypeScript API
 │  ├─ src/
 │  │  ├─ config/
 │  │  │  └─ clinical.config.ts
-│  │  ├─ domain/           # mongoose models (patient, session, schedule)
-│  │  ├─ routes/           # patient.routes.ts, schedule.routes.ts, session.routes.ts
-│  │  ├─ services/         # anomaly.service.ts (business logic)
+│  │  ├─ domain/             # Mongoose models (patient, session, schedule)
+│  │  ├─ routes/             # patient.routes.ts, schedule.routes.ts, session.routes.ts
+│  │  ├─ services/           # anomaly.service.ts (business logic)
 │  │  ├─ seed.ts
 │  │  ├─ app.ts
 │  │  └─ server.ts
 │  ├─ package.json
-│  └─ tests/               # jest tests (anomaly + api)
-├─ frontend/               # Vite + React + TypeScript UI
+│  └─ tests/                 # Jest tests (anomaly + API)
+├─ frontend/                 # Vite + React + TypeScript UI
 │  ├─ src/
 │  │  ├─ components/
-│  │  ├─ api/client.ts     # axios client
+│  │  ├─ api/client.ts       # Axios client
 │  │  ├─ types/types.ts
 │  │  ├─ App.tsx
 │  │  └─ main.tsx
 │  ├─ package.json
-│  └─ vitest.config.ts     # UI tests
-├─ README.pdf              # project summary (same content)
-└─ README.md               # this file
+│  └─ vitest.config.ts       # UI tests
+├─ README.pdf                # Project summary (same content)
+└─ README.md                 # This file
+```
 
-# backend/.env
+---
+
+##  Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/crackedhandle/dialysis-dashboard.git
+cd dialysis-dashboard
+```
+
+### 2. Backend — install, seed & run
+
+```bash
+cd backend
+npm install
+# Create .env file (see Environment Variables section below)
+npm run seed
+npm run dev
+```
+
+### 3. Frontend — install & run
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 4. Open in browser
+
+| Service | URL |
+|---|---|
+| Backend OpenAPI / Swagger | http://localhost:5000/docs |
+| Frontend UI | http://localhost:5173 |
+
+---
+
+##  Environment Variables
+
+Create a `.env` file inside the `backend/` folder:
+
+```env
 MONGO_URI="mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/dialysis?retryWrites=true&w=majority"
 PORT=5000
-backened --commands(Powerswhell)
+```
+
+---
+
+##  Windows (PowerShell) Commands
+
+### Backend
+
+```powershell
 cd C:\path\to\dialysis-dashboard\backend
 
-# install
-npm install
+npm install          # Install dependencies
+npm run seed         # Seed example data
+npm run dev          # Start dev server (hot reload) on port 5000
+```
 
-# seed example data (uses seed.ts)
-npm run seed
+### Frontend
 
-# dev server (hot reload)
-npm run dev
-# (server listens on port 5000 by default)
-
-feontened commands(powershell)
+```powershell
 cd C:\path\to\dialysis-dashboard\frontend
 
-# install
-npm install
+npm install          # Install dependencies
+npm run dev          # Start Vite dev server on port 5173
+```
 
-# run dev UI
-npm run dev
-# (vite server on port 5173)
+---
 
-API docs
+##  API Reference
 
-Swagger UI is available after starting backend:
-http://localhost:5000/docs
+Swagger UI is available after starting the backend:
 
-You can test endpoints from the Swagger page or via cURL / PowerShell:
+> **http://localhost:5000/docs**
+
+You can test endpoints directly from the Swagger page, or via PowerShell:
+
+```powershell
 Invoke-RestMethod "http://localhost:5000/schedule/today?unitId=U1" | ConvertTo-Json -Depth 6
+```
 
-Minimal API reference
+### Endpoints
 
-GET /health — simple health-check
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Simple health-check |
+| `GET` | `/schedule/today?unitId=U1` | Returns today's schedule for unit U1 |
+| `POST` | `/sessions` | Create a dialysis session |
 
-GET /schedule/today?unitId=U1 — returns today's schedule for unit U1
+### `POST /sessions` — Example Request Body
 
-POST /sessions — create a dialysis session
-
-#post/sessions --body(example)
+```json
 {
   "patientId": "69a3e480493547850cfc773c",
   "unitId": "U1",
@@ -97,50 +139,59 @@ POST /sessions — create a dialysis session
   "diastolicBP": 90,
   "machineId": "M1"
 }
+```
 
-## Clinical assumptions & configuration
-All thresholds are explicit, centralized in:
+---
+##  Clinical Assumptions & Configuration
+
+All thresholds are **explicit and centralized** in:
+
+```
 backend/src/config/clinical.config.ts
+```
 
-# Example
+```ts
 export const ClinicalConfig = {
-  // maximum allowed interdialytic weight gain (percentage of dry weight)
-  maxInterdialyticGainPercent: 5,         // 5%
+  // Maximum allowed interdialytic weight gain (% of dry weight)
+  maxInterdialyticGainPercent: 5,       // 5%
 
-  // high post-dialysis systolic blood pressure threshold (mmHg)
-  maxPostDialysisSystolicBP: 160,         // 160 mmHg
+  // High post-dialysis systolic blood pressure threshold
+  maxPostDialysisSystolicBP: 160,       // 160 mmHg
 
-  // target session duration (minutes) and tolerance
-  targetDurationMinutes: 240,             // 4 hours
-  durationTolerancePercent: 0.25,         // +/- 25% => allowed: 180 - 300 minutes
+  // Target session duration and tolerance
+  targetDurationMinutes: 240,           // 4 hours
+  durationTolerancePercent: 0.25,       // ±25% → allowed: 180–300 minutes
 };
+```
 
-## Small dataset / seed script
+No magic numbers anywhere else in the codebase — changing a threshold here propagates everywhere automatically.
 
-Seed script: `backend/src/seed.ts` — run the following inside the `backend` folder:
-What it creates:
-## Small dataset / seed script
+---
 
-Seed script: `backend/src/seed.ts` — run the following inside the `backend` folder:
+##  Seed Script
+
+The seed script populates the database with example patients and sessions for local development.
+
+**Location:** `backend/src/seed.ts`
 
 ```bash
+# Run from inside the backend/ folder
 npm run seed
 ```
-What it creates:
 
-- Patients:
-  - Rahul Sharma
-  - Anita Verma
-- Schedule entries for today with `unitId = U1`
-- One session for Rahul that includes anomalies:
+**What it creates:**
+
+- **Patients:** Rahul Sharma, Anita Verma
+- **Schedule entries** for today with `unitId = U1`
+- **One session for Rahul** that includes anomalies:
   - Excess interdialytic weight gain
   - High post-dialysis systolic BP
 
-To re-seed later (reset + regenerate sample data), run again:
-High post-dialysis systolic BP
-
-To re-seed later (reset + regenerate sample data), run again:
+To re-seed later (reset + regenerate sample data), simply run `npm run seed` again.
 npm run seed
+---
+
+
 # Architecture overview (one page)
 
 **Goals:** a small, testable, event-driven monitoring system with clear separation of concerns and a single source of truth for clinical logic.
@@ -166,17 +217,43 @@ npm run seed
   - Highlights anomalies
   - Provides modal to create new sessions
 
-- **OpenAPI / Swagger**
-  - Auto-exposed at `/docs` for manual testing and documentation
- ASCII diagram
+## 🔌 OpenAPI / Swagger
 
-[Browser UI (Vite React)] <--axios--> [Express API (backend)]
-        |                                         |
-        |                                         v
-        |                                   [Mongoose Models]
-        |                                         |
-        v                                         v
-   Session Modal  --POST /sessions-->  detectAnomalies() -> Session document (with anomalies)
+Auto-exposed at `/docs` for manual testing and documentation.
+
+> Start the backend, then visit: **http://localhost:5000/docs**
+
+---
+
+##  Architecture Diagram
+```
+┌─────────────────────────────┐              ┌──────────────────────────────┐
+│     Browser UI (Vite+React) │◄───axios────►│     Express API (Backend)    │
+│                             │              │                              │
+│  ┌──────────────────────┐   │              │  ┌────────────────────────┐  │
+│  │    Schedule View     │   │              │  │    Mongoose Models     │  │
+│  │  (patients/sessions) │   │              │  │  Patient | Session     │  │
+│  └──────────────────────┘   │              │  │  ScheduleEntry         │  │
+│                             │              │  └───────────┬────────────┘  │
+│  ┌──────────────────────┐   │              │              │               │
+│  │    Session Modal     │───┼──POST ───────┼─►  detectAnomalies()        │
+│  │  (create new entry)  │   │  /sessions   │              │               │
+│  └──────────────────────┘   │              │              ▼               │
+│                             │              │  ┌────────────────────────┐  │
+└─────────────────────────────┘              │  │  Session Document      │  │
+                                             │  │  (saved with anomalies)│  │
+                                             │  └────────────────────────┘  │
+                                             └──────────────────────────────┘
+```
+
+### Flow Summary
+
+1. **Browser UI** fetches today's schedule via `GET /schedule/today`
+2. **Session Modal** submits new session data via `POST /sessions`
+3. **Express API** receives the request and passes data to `detectAnomalies()`
+4. **`detectAnomalies()`** evaluates thresholds from `clinical.config.ts`
+5. **Session document** is saved to MongoDB with any detected anomalies attached
+6. **UI re-fetches** and highlights anomalies on the dashboard
 
    ## Key design decision
 
